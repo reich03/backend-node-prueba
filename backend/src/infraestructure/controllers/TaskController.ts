@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { TaskService } from '../../application/services/TaskService';
-import { CreateTaskDTO, TaskQueryParams } from '../../domain/entities/Task';
+import { CreateTaskDTO, UpdateTaskDTO, TaskQueryParams } from '../../domain/entities/Task';
 
 
 export class TaskController {
@@ -62,4 +62,39 @@ export class TaskController {
         }
     };
 
+    updateTask = async (
+        req: Request<{ id: string }, unknown, UpdateTaskDTO>,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> => {
+        try {
+            const task = await this.taskService.updateTask(req.params.id, req.body);
+
+            res.status(200).json({
+                success: true,
+                data: task,
+                message: 'Tarea actualizada exitosamente',
+            });
+        } catch (error) {
+            next(error);
+        }
+    };
+
+
+    deleteTask = async (
+        req: Request<{ id: string }>,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> => {
+        try {
+            await this.taskService.deleteTask(req.params.id);
+
+            res.status(200).json({
+                success: true,
+                message: 'Tarea eliminada exitosamente',
+            });
+        } catch (error) {
+            next(error);
+        }
+    };
 }
