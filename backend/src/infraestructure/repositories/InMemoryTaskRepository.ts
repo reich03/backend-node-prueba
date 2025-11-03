@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { ITaskRepository } from '../../domain/repositories/ITaskRepository';
-import { Task, CreateTaskDTO, TaskStatus } from '../../domain/entities/Task';
+import { Task, CreateTaskDTO, TaskStatus,UpdateTaskDTO } from '../../domain/entities/Task';
 
 
 export class InMemoryTaskRepository implements ITaskRepository {
@@ -41,4 +41,26 @@ export class InMemoryTaskRepository implements ITaskRepository {
     async clear(): Promise<void> {
         this.tasks.clear();
     }
+
+      async update(id: string, data: UpdateTaskDTO): Promise<Task | null> {
+    const task = this.tasks.get(id);
+
+    if (!task) {
+      return null;
+    }
+
+    const updatedTask: Task = {
+      ...task,
+      ...data,
+      updatedAt: new Date(),
+    };
+
+    this.tasks.set(id, updatedTask);
+    return updatedTask;
+  }
+
+
+   async delete(id: string): Promise<boolean> {
+    return this.tasks.delete(id);
+  }
 }
