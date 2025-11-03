@@ -1,5 +1,10 @@
 import express, { Application } from 'express';
 import cors from 'cors';
+import { createTaskRouter } from './routes/taskRoutes';
+import { errorHandler } from './middlewares/errorHandler';
+import { TaskController } from './controllers/TaskController';
+import { TaskService } from '../application/services/TaskService';
+import { InMemoryTaskRepository } from './repositories/InMemoryTaskRepository';
 
 
 
@@ -18,6 +23,10 @@ export const createApp = (): Application => {
     });
   });
 
+  const taskRepository = new InMemoryTaskRepository();
+  const taskService = new TaskService(taskRepository);
+  const taskController = new TaskController(taskService);
+  app.use('/api/tasks', createTaskRouter(taskController));
 
   // 404 handler
   app.use((_req, res) => {
@@ -28,6 +37,6 @@ export const createApp = (): Application => {
     });
   });
 
-
+  app.use(errorHandler);
   return app;
 };
